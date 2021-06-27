@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GT.WebServices.API.Application.Dtos
+﻿namespace GT.WebServices.API.Application.Dtos
 {
-    public enum EmployeeConsentActionType
+   public enum EmployeeConsentActionType
     {
         Given,
         Revoked, // Employee Declined Renewal at the terminal

@@ -1,6 +1,5 @@
 ﻿using GT.WebServices.API.Application.Security;
 using GT.WebServices.API.Core;
-using GT.WebServices.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +11,7 @@ using System.Text;
 
 namespace GT.WebServices.API.Application.Filters
 {
-    public class CustomJwtAuthFilter : IAuthorizationFilter
+   public class CustomJwtAuthFilter : IAuthorizationFilter
     {
         public CustomJwtAuthFilter()
         { }

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace GT.WebServices.API.Core
+﻿namespace GT.WebServices.API.Core
 {
-    public interface ITerminalConfiguration
+   public interface ITerminalConfiguration
     {
         string SerialNumber { get; set; }
     }

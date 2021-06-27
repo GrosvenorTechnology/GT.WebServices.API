@@ -10,7 +10,6 @@ namespace GT.WebServices.API.Services
 {
    public interface IEmployeeDataService
    {
-      //Task<Guid> GetCompanyIdBySerialNumber(string serialNumber);
       IQueryable<Employee> EmployeesQuery(string serialNumber);
       Task<int> GetCurrentEmployeeCount(string serialNumber);
       Task<List<Guid>> GetCurrentEmployeeIds(string serialNumber);

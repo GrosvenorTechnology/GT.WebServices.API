@@ -1,14 +1,12 @@
 ﻿using GT.WebServices.API.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace GT.WebServices.API.Application.Middleware
 {
-    public class TerminalConfigurationMiddleware
+   public class TerminalConfigurationMiddleware
     {
         private readonly RequestDelegate _next;
 

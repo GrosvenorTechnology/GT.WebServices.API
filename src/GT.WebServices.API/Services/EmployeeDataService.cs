@@ -27,15 +27,6 @@ namespace GT.WebServices.API.Services
          _mapper = mapper;
       }
 
-      //public async Task<Guid> GetCompanyIdBySerialNumber(string serialNumber)
-      //{
-      //   return await (from e in DemoData
-      //                 join dToAdg in _adsContext.DeviceToAdgs on serialNumber equals dToAdg.SerialNumber
-      //                 join adg in _adsContext.AdvancedDistributionGroups on dToAdg.AdvancedDistributionGroupId equals adg.AdvancedDistributionGroupId
-      //                 group adg by adg.CompanyId into t0
-      //                 select t0.Key).SingleOrDefaultAsync();
-      //}
-
       public IQueryable<Employee> EmployeesQuery(string serialNumber) =>
                   //Normalyy this would be a database query here, serial number is to allow you to implement some sor of device grouping
                   DemoData.AsQueryable();
