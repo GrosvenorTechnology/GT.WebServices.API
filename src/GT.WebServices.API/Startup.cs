@@ -32,6 +32,7 @@ namespace GT.WebServices.API
          services.AddScoped<IEmployeeDataService, EmployeeDataService>();
 
          services.AddSingleton<IJwtTokenService, JwtTokenService>();
+         services.AddSingleton<IDataCollectionService, DataCollectionService>();
 
          services.AddControllers(options =>
          {

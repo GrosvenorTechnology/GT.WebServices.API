@@ -72,19 +72,22 @@ namespace GT.WebServices.API.Services
             {
                EmployeeId = new Guid("CCBB34B8-90DE-4976-93FA-C1B34F12A95C"),
                ExternalId = "1111111",
+               Name = "John Smith",
                Firstname = "John",
                Surname = "Smith",
-               KeyPadId = "123456",
-               BadgeCode = "6543658634",
+               KeyPadId = "1",
+               BadgeCode = "1",
                CreatedOn = DateTime.Parse("2021-01-01"),
-               ModifiedOn = DateTime.Parse("2021-01-01"),
+               ModifiedOn = DateTime.Parse("2022-02-01"),
                Language = "en",
+               VerifyBy = "none",
                Roles = "supervisor"
             },
             new Employee
             {
                EmployeeId = new Guid("7B9B0608-2D5F-4C2A-8EDE-8F6943A85782"),
                ExternalId = "222222",
+               Name = "",
                Firstname = "",
                Surname = "",
                KeyPadId = "",
@@ -93,6 +96,7 @@ namespace GT.WebServices.API.Services
                ModifiedOn = DateTime.Parse("2021-01-03"),
                Language = "",
                Roles = "",
+               VerifyBy = "",
                IsDeleted = true
             }
          };
