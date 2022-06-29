@@ -131,17 +131,17 @@ namespace GT.WebServices.API.Controllers
                 if (await hasEmployeeChanges(serialNumber)) changes.Add(new XElement("employees"));
                 
                 //Add other resources here, such as DataCollection
-                if (DateTime.TryParse(dataCollectionRevision, out var revision))
-                { 
-                    if (revision < _dataCollectionService.GetRevision())
-                    {
-                        changes.Add(new XElement("dataCollection"));
-                    }
-                }
-                else
-                {
-                    changes.Add(new XElement("dataCollection"));
-                }
+                //if (DateTime.TryParse(dataCollectionRevision, out var revision))
+                //{ 
+                //    if (revision < _dataCollectionService.GetRevision())
+                //    {
+                //        changes.Add(new XElement("dataCollection"));
+                //    }
+                //}
+                //else
+                //{
+                //    changes.Add(new XElement("dataCollection"));
+                //}
 
 
                 return Ok(changes);

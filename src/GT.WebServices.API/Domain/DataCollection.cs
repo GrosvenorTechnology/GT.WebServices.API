@@ -71,7 +71,7 @@ namespace GT.WebServices.API.Domain
     {
         [XmlArray("items")]
         [XmlArrayItem("item")]
-        public List<LevelItemBase> Items { get; set; }
+        public List<LevelItem> Items { get; set; }
     }
 
 
