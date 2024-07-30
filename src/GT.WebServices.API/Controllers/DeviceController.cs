@@ -1,17 +1,9 @@
-﻿using System.Diagnostics;
-using System.Xml.Linq;
-
-using GT.WebServices.API.Application.Attributes;
-using GT.WebServices.API.Application.Dtos;
+﻿using GT.WebServices.API.Application.Dtos;
 using GT.WebServices.API.Application.Security;
 using GT.WebServices.API.Core;
 using GT.WebServices.API.Services;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Mvc;
-
-using Newtonsoft.Json;
-using Microsoft.ApplicationInsights.DataContracts;
-using GT.WebServices.API.Domain;
 
 namespace GT.WebServices.API.Controllers;
 

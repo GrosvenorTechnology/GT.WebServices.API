@@ -1,21 +1,13 @@
-﻿using System.Diagnostics;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 
 using GT.WebServices.API.Application.Attributes;
-using GT.WebServices.API.Application.Dtos;
-using GT.WebServices.API.Application.Security;
 using GT.WebServices.API.Core;
 using GT.WebServices.API.Services;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Mvc;
-
-using Newtonsoft.Json;
 using Microsoft.ApplicationInsights.DataContracts;
-using GT.WebServices.API.Domain;
-using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
 using System.Xml;
-using System.Linq;
 
 namespace GT.WebServices.API.Controllers;
 
@@ -40,7 +32,7 @@ public class CollectionsController : ControllerBase
     [HttpGet()]
     [CustomJwtAuthorize]
     [ProducesResponseType(typeof(XElement), StatusCodes.Status200OK)]
-    public ActionResult GetJobCodes(string revision = null)
+    public ActionResult GetCollectionIndex(string revision = null)
     {
         RequestTelemetry reqTelemetry = HttpContext?.Features?.Get<RequestTelemetry>();
         reqTelemetry?.Properties?.Add("SerialNumber", _terminalConfiguration.SerialNumber);
@@ -69,7 +61,7 @@ public class CollectionsController : ControllerBase
             return NotFound();
         }
 
-        var result = new XElement("employeeIDs");
+        var result = new XElement("ids");
 
         try
         {
