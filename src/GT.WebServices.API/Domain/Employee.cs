@@ -24,4 +24,6 @@ namespace GT.WebServices.API.Domain
         public DateTime CreatedOn { get; set; }
         public DateTime ModifiedOn { get; set; }
     }
+
+
 }

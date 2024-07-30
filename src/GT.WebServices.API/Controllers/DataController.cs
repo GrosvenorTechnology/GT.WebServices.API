@@ -7,8 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-using AutoMapper;
-
 using GT.WebServices.API.Application.Attributes;
 using GT.WebServices.API.Application.Dtos;
 using GT.WebServices.API.Application.Security;
@@ -24,6 +22,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Microsoft.ApplicationInsights.DataContracts;
 using GT.WebServices.API.Domain;
+using System.Reflection.Emit;
 
 namespace GT.WebServices.API.Controllers
 {
@@ -33,25 +32,28 @@ namespace GT.WebServices.API.Controllers
     {
         private readonly ILogger<DataController> _logger;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly IMapper _mapper;
         private readonly TelemetryClient _telemetryClient;
         private readonly IJwtTokenService _jwtTokenService;
         private readonly ITerminalConfiguration _terminalConfiguration;
         private readonly IEmployeeDataService _employeeDataService;
         private readonly IDataCollectionService _dataCollectionService;
+        private readonly JobCategoryDataService _jobCategoryDataService;
+        private readonly JobCodeDataService _jobCodeDataService;
 
         public DataController(ILogger<DataController> logger, IWebHostEnvironment webHostEnvironment, ITerminalConfiguration terminalConfiguration
-              , IMapper mapper, TelemetryClient telemetryClient, IConfiguration configuration, IJwtTokenService jwtTokenService
-              , IEmployeeDataService employeeDataService, IDataCollectionService dataCollectionService)
+              , TelemetryClient telemetryClient, IConfiguration configuration, IJwtTokenService jwtTokenService
+              , IEmployeeDataService employeeDataService, IDataCollectionService dataCollectionService,
+                JobCategoryDataService jobCategoryDataService, JobCodeDataService jobCodeDataService)
         {
             _logger = logger;
             _webHostEnvironment = webHostEnvironment;
-            _mapper = mapper;
             _telemetryClient = telemetryClient;
             _jwtTokenService = jwtTokenService;
             _terminalConfiguration = terminalConfiguration;
             _employeeDataService = employeeDataService;
             _dataCollectionService = dataCollectionService;
+            _jobCategoryDataService = jobCategoryDataService;
+            _jobCodeDataService = jobCodeDataService;
         }
 
         [HttpPost("devices/{deviceID}")]
@@ -122,6 +124,56 @@ namespace GT.WebServices.API.Controllers
                 return empsAfterRevision || empsCountsDontMatch;
             }
 
+            async Task<bool> hasJobCategoriesChanges(string serialNumber)
+            {
+                if (jobCategoriesRevision == null) return true;
+
+                var query = _jobCategoryDataService.Query();
+
+                var itemsAfterRevision = false;
+                var itemCountsDontMatch = false;
+
+                if (jobCategoriesCount != null)
+                {
+                    itemCountsDontMatch = query.Count() != jobCategoriesCount ;
+                }
+
+                if (itemCountsDontMatch) return true;
+
+                if (jobCategoriesRevision != null)
+                {
+                    var revision = DateTimeOffset.Parse(jobCategoriesRevision);
+                    itemsAfterRevision = query.Any(x => x.LastModifiedOn > revision.UtcDateTime);
+                }
+
+                return itemsAfterRevision || itemCountsDontMatch;
+            }
+
+            async Task<bool> hasJobCodeChanges(string serialNumber)
+            {
+                if (jobCodesRevision == null) return true;
+
+                var query = _jobCodeDataService.Query();
+
+                var itemsAfterRevision = false;
+                var itemCountsDontMatch = false;
+
+                if (jobCodesCount != null)
+                {
+                    itemCountsDontMatch = query.Count() != jobCodesCount;
+                }
+
+                if (itemCountsDontMatch) return true;
+
+                if (jobCodesRevision != null)
+                {
+                    var revision = DateTimeOffset.Parse(jobCodesRevision);
+                    itemsAfterRevision = query.Any(x => x.LastModifiedOn > revision.UtcDateTime);
+                }
+
+                return itemsAfterRevision || itemCountsDontMatch;
+            }
+
             var changes = new XElement("changes");
 
             try
@@ -129,7 +181,9 @@ namespace GT.WebServices.API.Controllers
                 var serialNumber = _terminalConfiguration.SerialNumber;
 
                 if (await hasEmployeeChanges(serialNumber)) changes.Add(new XElement("employees"));
-                
+                if (await hasJobCategoriesChanges(serialNumber)) changes.Add(new XElement("jobCategories"));
+                if (await hasJobCodeChanges(serialNumber)) changes.Add(new XElement("jobCodes"));
+
                 //Add other resources here, such as DataCollection
                 //if (DateTime.TryParse(dataCollectionRevision, out var revision))
                 //{ 
@@ -414,6 +468,92 @@ namespace GT.WebServices.API.Controllers
                 return Problem();
             }
         }
+
+        [HttpGet("jobCategories")]
+        [CustomJwtAuthorize]
+        [ProducesResponseType(typeof(XElement), StatusCodes.Status200OK)]
+        public async Task<ActionResult> GetJobCategories(string revision = null)
+        {
+            RequestTelemetry reqTelemetry = HttpContext?.Features?.Get<RequestTelemetry>();
+            reqTelemetry?.Properties?.Add("SerialNumber", _terminalConfiguration.SerialNumber);
+
+            try
+            {
+                var result = new XElement("jobCategories");
+                
+                var data = _jobCategoryDataService.Query().ToList();
+
+                var highestRevision = DateTimeOffset.MinValue;
+
+                foreach (var jobCategory in data)
+                {
+                    highestRevision = jobCategory.LastModifiedOn;
+
+                    result.Add(new XElement("jobCategory",
+                        new XElement("id", jobCategory.Id),
+                        new XElement("level", jobCategory.Order),
+                        new XElement("name", jobCategory.Name)
+                        ));
+                }
+
+                if (highestRevision != DateTimeOffset.MinValue)
+                {
+                    //Only put this in if there's a row
+                    result.AddFirst(new XElement("revision", highestRevision.ToString("O")));
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, $"Something went wrong while calling [{nameof(GetJobCategories)}] for Device with SerialNumber '{_terminalConfiguration?.SerialNumber}'!");
+                return Problem(detail: ex.Message);
+            }
+        }
+
+
+        [HttpGet("jobCodes")]
+        [CustomJwtAuthorize]
+        [ProducesResponseType(typeof(XElement), StatusCodes.Status200OK)]
+        public async Task<ActionResult> GetJobCodes(string revision = null)
+        {
+            RequestTelemetry reqTelemetry = HttpContext?.Features?.Get<RequestTelemetry>();
+            reqTelemetry?.Properties?.Add("SerialNumber", _terminalConfiguration.SerialNumber);
+
+            try
+            {
+                var result = new XElement("jobCodes");
+
+                var data = _jobCodeDataService.Query().ToList();
+
+                var highestRevision = DateTimeOffset.MinValue;
+
+                foreach (var jobCode in data)
+                {
+                    result.Add(new XElement("jobCode",
+                        new XElement("id", jobCode.Id),
+                        new XElement("jobCategoryID", jobCode.JobCategoryId),
+                        new XElement("code", jobCode.Code),
+                        new XElement("name", jobCode.Name)
+                        ));
+                    highestRevision = jobCode.LastModifiedOn;
+                }
+
+                if (highestRevision != DateTimeOffset.MinValue)
+                {
+                    //Only put this in if there's a row
+                    result.AddFirst(new XElement("revision", highestRevision.ToString("O")));
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, $"Something went wrong while calling [{nameof(GetJobCodes)}] for Device with SerialNumber '{_terminalConfiguration?.SerialNumber}'!");
+                return Problem(detail: ex.Message);
+            }
+        }
+
 
     }
 }

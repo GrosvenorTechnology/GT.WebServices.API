@@ -2,71 +2,70 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using GT.WebServices.API.Application.Dtos;
 using Microsoft.Extensions.Logging;
 using GT.WebServices.API.Domain;
+using GT.WebServices.API.Application.Mapping;
 
 namespace GT.WebServices.API.Services
 {
-   public class EmployeeDataService : IEmployeeDataService
-   {
-      private static List<Employee> DemoData;
+    public class EmployeeDataService : IEmployeeDataService
+    {
+        private static List<Employee> DemoData;
 
-      private readonly ILogger<EmployeeDataService> _logger;
-      private readonly IMapper _mapper;
+        private readonly ILogger<EmployeeDataService> _logger;
 
-      static EmployeeDataService ()
-      {
-         LoadDemoData();
-      }
+        static EmployeeDataService()
+        {
+            LoadDemoData();
+        }
 
-      public EmployeeDataService(ILogger<EmployeeDataService> logger, IMapper mapper)
-      {
-         _logger = logger;
-         _mapper = mapper;
-      }
+        public EmployeeDataService(ILogger<EmployeeDataService> logger)
+        {
+            _logger = logger;
+        }
 
-      public IQueryable<Employee> EmployeesQuery(string serialNumber) =>
-                  //Normalyy this would be a database query here, serial number is to allow you to implement some sor of device grouping
-                  DemoData.AsQueryable();
+        public IQueryable<Employee> EmployeesQuery(string serialNumber) =>
+                    //Normalyy this would be a database query here, serial number is to allow you to implement some sort of device grouping
+                    DemoData.AsQueryable();
 
-      public async Task<EmployeeDto> GetEmployeeDto(Guid employeeId)
-      {
-         var employee = DemoData.AsQueryable().SingleOrDefault(x => x.EmployeeId == employeeId);
-         var result = _mapper.Map<EmployeeDto>(employee);
-         return result;
-      }
+        public async Task<EmployeeDto> GetEmployeeDto(Guid employeeId)
+        {
+            var mapper = new AdsMapper();
+            var employee = DemoData.AsQueryable().SingleOrDefault(x => x.EmployeeId == employeeId);
+            var result = mapper.Map(employee);
+            return result;
+        }
 
-      public async Task<List<Employee>> GetCurrentEmployees(string serialNumber)
-      {
-         return EmployeesQuery(serialNumber).Where(x => !x.IsDeleted).ToList();
-      }
+        public async Task<List<Employee>> GetCurrentEmployees(string serialNumber)
+        {
+            return EmployeesQuery(serialNumber).Where(x => !x.IsDeleted).ToList();
+        }
 
-      public async Task<List<Guid>> GetCurrentEmployeeIds(string serialNumber)
-      {
-         return EmployeesQuery(serialNumber).Where(x => !x.IsDeleted).Select(x => x.EmployeeId).ToList();
-      }
+        public async Task<List<Guid>> GetCurrentEmployeeIds(string serialNumber)
+        {
+            return EmployeesQuery(serialNumber).Where(x => !x.IsDeleted).Select(x => x.EmployeeId).ToList();
+        }
 
-      public async Task<int> GetCurrentEmployeeCount(string serialNumber)
-      {
-         return EmployeesQuery(serialNumber).Where(x => !x.IsDeleted).Count();
-      }
+        public async Task<int> GetCurrentEmployeeCount(string serialNumber)
+        {
+            return EmployeesQuery(serialNumber).Where(x => !x.IsDeleted).Count();
+        }
 
-      public Task Update(Employee employee)
-      {
-         employee.ModifiedOn = DateTime.UtcNow;
+        public Task Update(Employee employee)
+        {
+            employee.ModifiedOn = DateTime.UtcNow;
 
-         var old = DemoData.First(x => x.EmployeeId == employee.EmployeeId);
-         DemoData.Remove(old);
-         DemoData.Add(employee);
+            var old = DemoData.First(x => x.EmployeeId == employee.EmployeeId);
+            DemoData.Remove(old);
+            DemoData.Add(employee);
 
-         return Task.CompletedTask;
-      }
+            return Task.CompletedTask;
+        }
 
-      private static void LoadDemoData()
-      {
-         DemoData = new List<Employee>
+        private static void LoadDemoData()
+        {
+            DemoData = new List<Employee>
          {
             new Employee
             {
@@ -100,6 +99,6 @@ namespace GT.WebServices.API.Services
                IsDeleted = true
             }
          };
-      }
-   }
+        }
+    }
 }
