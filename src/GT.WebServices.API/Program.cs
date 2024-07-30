@@ -2,9 +2,7 @@ using GT.WebServices.API.Application.Middleware;
 using GT.WebServices.API.Application.Security;
 using GT.WebServices.API.Core;
 using GT.WebServices.API.Services;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,9 +11,10 @@ builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.Configure<AdsConfigurationOptions>(builder.Configuration.GetSection(AdsConfigurationOptions.Name));
 
 builder.Services.AddScoped<ITerminalConfiguration, TerminalConfiguration>();
-builder.Services.AddScoped<IEmployeeDataService, EmployeeDataService>();
+builder.Services.AddScoped<EmployeeDataService, EmployeeDataService>();
 builder.Services.AddScoped<JobCategoryDataService, JobCategoryDataService>();
 builder.Services.AddScoped<JobCodeDataService, JobCodeDataService>();
+builder.Services.AddScoped<ScheduleDataService, ScheduleDataService>();
 
 builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 builder.Services.AddSingleton<IDataCollectionService, DataCollectionService>();

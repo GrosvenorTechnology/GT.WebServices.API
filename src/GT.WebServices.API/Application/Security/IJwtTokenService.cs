@@ -1,10 +1,9 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 
-namespace GT.WebServices.API.Application.Security
+namespace GT.WebServices.API.Application.Security;
+
+public interface IJwtTokenService
 {
-    public interface IJwtTokenService
-    {
-        string GenerateToken(string serialNumber);
-        (bool, SecurityToken) ValidateToken(string token);
-    }
+    string GenerateToken(string serialNumber);
+    (bool, SecurityToken) ValidateToken(string token);
 }

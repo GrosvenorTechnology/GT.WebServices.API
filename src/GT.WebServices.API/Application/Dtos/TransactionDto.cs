@@ -1,57 +1,56 @@
 ﻿using System.Xml.Serialization;
 
-namespace GT.WebServices.API.Application.Dtos
+namespace GT.WebServices.API.Application.Dtos;
+
+[XmlRoot("transaction")]
+public class TransactionDto
 {
-   [XmlRoot("transaction")]
-    public class TransactionDto
+    public TransactionDto()
+    { }
+
+    [XmlElement("transID")] public string TransactionId { get; set; }
+    [XmlElement("deviceID")] public string DeviceId { get; set; }
+    [XmlElement("employee")] public TransactionEmployeeDto Employee { get; set; }
+    [XmlElement("data")] public TransactionClockingDto Clocking { get; set; }
+
+    public class TransactionClockingDto
     {
-        public TransactionDto()
+        public TransactionClockingDto()
         { }
 
-        [XmlElement("transID")] public string TransactionId { get; set; }
-        [XmlElement("deviceID")] public string DeviceId { get; set; }
-        [XmlElement("employee")] public TransactionEmployeeDto Employee { get; set; }
-        [XmlElement("data")] public TransactionClockingDto Clocking { get; set; }
+        [XmlElement("time")] public string Time { get; set; }
+        [XmlElement("type")] public string Type { get; set; }
+        // Maybe an enum with 'In' and 'Out'
+    }  
 
-        public class TransactionClockingDto
-        {
-            public TransactionClockingDto()
-            { }
+    public class TransactionEmployeeDto
+    {
+        public TransactionEmployeeDto()
+        { }
 
-            [XmlElement("time")] public string Time { get; set; }
-            [XmlElement("type")] public string Type { get; set; }
-            // Maybe an enum with 'In' and 'Out'
-        }  
+        [XmlElement("empID")] public string Firmware { get; set; }
+        [XmlElement("identifiedBy")] public TransactionIdentifiedBy Application { get; set; }
+        [XmlElement("verifiedBy")] public TransactionVerifiedBy Employees { get; set; }
+    }
 
-        public class TransactionEmployeeDto
-        {
-            public TransactionEmployeeDto()
-            { }
+    // Can these be enums?
+    public class TransactionIdentifiedBy
+    {
+        public TransactionIdentifiedBy()
+        { }
 
-            [XmlElement("empID")] public string Firmware { get; set; }
-            [XmlElement("identifiedBy")] public TransactionIdentifiedBy Application { get; set; }
-            [XmlElement("verifiedBy")] public TransactionVerifiedBy Employees { get; set; }
-        }
+        [XmlElement("keypadID")] public int KeypadID { get; set; }
+        [XmlElement("badgeCode")] public int BadgeCode { get; set; }
+        [XmlElement("bio")] public string TemplateId { get; set; }
+    }
 
-        // Can these be enums?
-        public class TransactionIdentifiedBy
-        {
-            public TransactionIdentifiedBy()
-            { }
+    public class TransactionVerifiedBy
+    {
+        public TransactionVerifiedBy()
+        { }
 
-            [XmlElement("keypadID")] public int KeypadID { get; set; }
-            [XmlElement("badgeCode")] public int BadgeCode { get; set; }
-            [XmlElement("bio")] public string TemplateId { get; set; }
-        }
-
-        public class TransactionVerifiedBy
-        {
-            public TransactionVerifiedBy()
-            { }
-
-            [XmlElement("pin")] public int Pin { get; set; }
-            [XmlElement("bio")] public int TemplateId { get; set; }
-            [XmlElement("none")] public string None { get; set; }
-        }
+        [XmlElement("pin")] public int Pin { get; set; }
+        [XmlElement("bio")] public int TemplateId { get; set; }
+        [XmlElement("none")] public string None { get; set; }
     }
 }

@@ -1,128 +1,125 @@
 ﻿using GT.WebServices.API.Domain;
-using System;
-using System.Collections.Generic;
 
-namespace GT.WebServices.API.Services
+namespace GT.WebServices.API.Services;
+
+public class DataCollectionService : IDataCollectionService
 {
-    public class DataCollectionService : IDataCollectionService
+    private DateTime _revision = DateTime.UtcNow;
+    private DataCollection _dataCollection = LoadData();
+
+    //We reset this on startup so the clock will only download the file
+    // once per run as a demo
+    public DateTime GetRevision()
     {
-        private DateTime _revision = DateTime.UtcNow;
-        private DataCollection _dataCollection = LoadData();
+        return _revision;
+    }
 
-        //We reset this on startup so the clock will only download the file
-        // once per run as a demo
-        public DateTime GetRevision()
-        {
-            return _revision;
-        }
+    public DataCollection GetData()
+    {
+        return _dataCollection;
+    }
 
-        public DataCollection GetData()
+    private static DataCollection LoadData()
+    {
+        var data = new DataCollection
         {
-            return _dataCollection;
-        }
-
-        private static DataCollection LoadData()
-        {
-            var data = new DataCollection
+            Flows = new List<DataCollectionFlow>
             {
-                Flows = new List<DataCollectionFlow>
-                {
-                    new DataCollectionFlow {
-                        Id = "absences",
-                        Config = new Config {
-                            Button = new Button {
-                                Label = "Absences"
-                            }
-                        },
-                        Levels = new List<Level> {
-                            new Level {
-                                Title = "Select Absence",
-                                Items = new List<LevelItem> {
-                                    new () {
-                                        Id = "ABS001",
-                                        Label = "Vacation"
-                                    },
-                                    new () {
-                                        Id = "ABS002",
-                                        Label = "Sick"
-                                    },
-                                    new () {
-                                        Id = "ABS003",
-                                        Label = "Doctor"
-                                    },
-                                    new () {
-                                        Id = "ABS004",
-                                        Label = "Dentist"
-                                    },
-                                    new () {
-                                        Id = "ABS005",
-                                        Label = "On business"
-                                    }
+                new DataCollectionFlow {
+                    Id = "absences",
+                    Config = new Config {
+                        Button = new Button {
+                            Label = "Absences"
+                        }
+                    },
+                    Levels = new List<Level> {
+                        new Level {
+                            Title = "Select Absence",
+                            Items = new List<LevelItem> {
+                                new () {
+                                    Id = "ABS001",
+                                    Label = "Vacation"
+                                },
+                                new () {
+                                    Id = "ABS002",
+                                    Label = "Sick"
+                                },
+                                new () {
+                                    Id = "ABS003",
+                                    Label = "Doctor"
+                                },
+                                new () {
+                                    Id = "ABS004",
+                                    Label = "Dentist"
+                                },
+                                new () {
+                                    Id = "ABS005",
+                                    Label = "On business"
                                 }
                             }
                         }
+                    }
+                },
+                new DataCollectionFlow { 
+                    Id = "covid",
+                    Config = new Config {
+                        Button = new Button {
+                            Label = "Covid (multi-level)"
+                        }
                     },
-                    new DataCollectionFlow { 
-                        Id = "covid",
-                        Config = new Config {
-                            Button = new Button {
-                                Label = "Covid (multi-level)"
-                            }
-                        },
-                        Levels = new List<Level> {
-                            new Level {
-                                Title = "Do you have COVID?",
-                                Items = new List<LevelItem> {
-                                    new () {
-                                        Id = "Yes",
-                                        Label = "Yes",
-                                        Levels = WrapSubLevels(new ()
-                                        {
-                                            new() {
-                                                Id = "Temperature-Yes",
-                                                Label = "Temperature - Yes",
-                                                Levels = WrapSubLevels(new ()
-                                                {
-                                                    new() {
-                                                        Id = "Cough-Yes",
-                                                        Label = "Cough - Yes"
-                                                    },
-                                                    new() {
-                                                        Id = "Cough-No",
-                                                        Label = "Cough - No"
-                                                    }
-                                                })
-                                            },
-                                            new() {
-                                                Id = "Temperature-No",
-                                                Label = "Temperature - No"
-                                            }
-                                        })
-                                    },
-                                    new () {
-                                        Id = "No",
-                                        Label = "No"
-                                    }
+                    Levels = new List<Level> {
+                        new Level {
+                            Title = "Do you have COVID?",
+                            Items = new List<LevelItem> {
+                                new () {
+                                    Id = "Yes",
+                                    Label = "Yes",
+                                    Levels = WrapSubLevels(new ()
+                                    {
+                                        new() {
+                                            Id = "Temperature-Yes",
+                                            Label = "Temperature - Yes",
+                                            Levels = WrapSubLevels(new ()
+                                            {
+                                                new() {
+                                                    Id = "Cough-Yes",
+                                                    Label = "Cough - Yes"
+                                                },
+                                                new() {
+                                                    Id = "Cough-No",
+                                                    Label = "Cough - No"
+                                                }
+                                            })
+                                        },
+                                        new() {
+                                            Id = "Temperature-No",
+                                            Label = "Temperature - No"
+                                        }
+                                    })
+                                },
+                                new () {
+                                    Id = "No",
+                                    Label = "No"
                                 }
                             }
                         }
                     }
                 }
-            };
+            }
+        };
 
-            return data;
-        }
+        return data;
+    }
 
-        private static SubLevels WrapSubLevels(List<LevelItem> items)
+    private static SubLevels WrapSubLevels(List<LevelItem> items)
+    {
+        return new SubLevels
         {
-            return new SubLevels
+            Level = new SubLevel
             {
-                Level = new SubLevel
-                {
-                    Items = items
-                }
-            };
-        }
+                Items = items
+            }
+        };
     }
 }
 
@@ -176,10 +173,10 @@ namespace GT.WebServices.API.Services
 //        <text language="de">Arbeitsreise</text>
 //      </label>
 //    </item>
-    
+
 //Configuration section
 //~~~~~~~~~~~~~~~~~~~~~
-    
+
 //The configuration section can contain information used by the :ref:`action_ce.datacollection.menu`
 //action for displaying a button for each flow. A label, role and group can be defined.The button
 //will not be placed, if the employee does not have the role specified. The button will also not be 
@@ -404,7 +401,7 @@ namespace GT.WebServices.API.Services
 //    <max>9999</max>
 //    <allowEmpty>true</allowEmpty>
 //  </numericEntryStep>
-  
+
 //The example above defines a numeric entry step with a default,
 //minimum and maximum value and specifies that an empty input
 //is allowed.
@@ -479,7 +476,7 @@ namespace GT.WebServices.API.Services
 //        </numericEntryStep>
 //      </dataEntry>
 //    </dataEntries>
-    
+
 //    <items>
 //      <item id="fruit.apples">
 //        <label>Apples</label>

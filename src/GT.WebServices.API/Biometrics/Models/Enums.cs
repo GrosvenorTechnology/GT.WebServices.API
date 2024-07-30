@@ -1,8 +1,7 @@
-﻿namespace GT.WebServices.API.Biometrics.Models
+﻿namespace GT.WebServices.API.Biometrics.Models;
+
+public enum ConsentType
 {
-    public enum ConsentType
-    {
-        Finger,
-        Face
-    }
+    Finger,
+    Face
 }

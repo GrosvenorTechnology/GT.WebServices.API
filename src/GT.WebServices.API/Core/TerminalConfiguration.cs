@@ -1,7 +1,6 @@
-﻿namespace GT.WebServices.API.Core
+﻿namespace GT.WebServices.API.Core;
+
+public class TerminalConfiguration : ITerminalConfiguration
 {
-   public class TerminalConfiguration : ITerminalConfiguration
-    {
-        public string SerialNumber { get; set; }
-    }
+    public string SerialNumber { get; set; }
 }
